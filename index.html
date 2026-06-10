@@ -2204,7 +2204,9 @@
 
         <div class="policy-section">
           <h2>10. Contact</h2>
-          <p>If you have any questions about this Privacy Policy, please visit the <button onclick="navigate('support')"
+          <p>If you have any questions about this Privacy Policy, please email us at <a
+              href="mailto:krishbahukhandi35@gmail.com">krishbahukhandi35@gmail.com</a> or visit the <button
+              onclick="navigate('support')"
               style="color:var(--nex-indigo);text-decoration:underline;background:none;border:none;cursor:pointer;font-size:inherit;padding:0;">Support
               &amp; Contact page</button>.</p>
         </div>
@@ -2436,7 +2438,8 @@
             <div class="contact-card" role="listitem">
               <div class="contact-card-icon"><i data-lucide="mail" aria-hidden="true"></i></div>
               <h4>Email</h4>
-              <p>Add your email address here</p>
+              <p><a href="mailto:krishbahukhandi35@gmail.com"
+                  aria-label="Send email to Krish Bahukhandi">krishbahukhandi35@gmail.com</a></p>
             </div>
             <div class="contact-card" role="listitem">
               <div class="contact-card-icon"><i data-lucide="clock" aria-hidden="true"></i></div>
@@ -2615,16 +2618,55 @@
     // ===== CONTACT FORM =====
     function handleFormSubmit(e) {
       e.preventDefault();
+
+      const name = document.getElementById('contactName').value.trim();
+      const email = document.getElementById('contactEmail').value.trim();
+      const subject = document.getElementById('contactSubject').value;
+      const message = document.getElementById('contactMessage').value.trim();
+
+      // Basic validation
+      if (!name || !email || !subject || !message) {
+        alert('Please fill in all fields before sending.');
+        return;
+      }
+
+      const subjectLabels = {
+        bug: 'Bug Report',
+        feature: 'Feature Request',
+        privacy: 'Privacy Question',
+        general: 'General Inquiry'
+      };
+
+      const mailSubject = encodeURIComponent('[NexCompress] ' + (subjectLabels[subject] || subject));
+      const mailBody = encodeURIComponent(
+        'Name: ' + name + '\n' +
+        'Email: ' + email + '\n' +
+        'Category: ' + (subjectLabels[subject] || subject) + '\n\n' +
+        'Message:\n' + message
+      );
+
+      const mailtoLink = 'mailto:krishbahukhandi35@gmail.com?subject=' + mailSubject + '&body=' + mailBody;
+
+      // Use a hidden anchor click — works in all browsers including file:// protocol
+      const tempLink = document.createElement('a');
+      tempLink.href = mailtoLink;
+      tempLink.style.display = 'none';
+      document.body.appendChild(tempLink);
+      tempLink.click();
+      document.body.removeChild(tempLink);
+
+      // Visual feedback
       const btn = document.getElementById('submitBtn');
-      btn.textContent = 'Message Sent! ✓';
-      btn.style.background = 'linear-gradient(135deg, var(--nex-green), #28e06b)';
+      btn.textContent = 'Opening email client… ✓';
+      btn.style.backgroundImage = 'linear-gradient(135deg, #22C55E, #28e06b)';
       btn.disabled = true;
+
       setTimeout(() => {
         btn.textContent = 'Send Message';
-        btn.style.background = '';
+        btn.style.backgroundImage = '';
         btn.disabled = false;
         document.getElementById('contactForm').reset();
-      }, 3000);
+      }, 4000);
     }
 
     // ===== INIT =====
