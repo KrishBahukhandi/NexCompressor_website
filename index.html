@@ -1,0 +1,2648 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NexCompress — Privacy-First Offline PDF &amp; Image Utility for Android</title>
+  <meta name="description"
+    content="NexCompress is a powerful offline PDF and image utility for Android. Compress PDFs, convert images, sign, edit, merge, split and protect PDFs — all on your device. No uploads. No account. Free." />
+  <meta name="keywords"
+    content="PDF compressor Android, image converter Android, offline PDF editor, sign PDF Android, NexCompress" />
+  <meta property="og:title" content="NexCompress — Offline PDF &amp; Image Utility" />
+  <meta property="og:description"
+    content="A powerful, privacy-first Android app for PDF and image processing. Everything runs on your device." />
+  <meta name="theme-color" content="#5B5BD6" />
+  <link rel="canonical" href="https://yourdomain.com" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap"
+    rel="stylesheet" />
+  <script defer src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    /* ===== CSS VARIABLES ===== */
+    :root {
+      --nex-indigo: #5B5BD6;
+      --nex-indigo-dark: #4242A8;
+      --nex-violet: #8B5CF6;
+      --nex-cyan: #22D3EE;
+      --nex-green: #22C55E;
+      --nex-amber: #F59E0B;
+      --nex-red: #EF4444;
+      --bg: #0F1115;
+      --surface: #171A21;
+      --surface-variant: #222732;
+      --text-primary: #E6E8EE;
+      --text-muted: #9AA1AF;
+      --border: #333A47;
+      --card-bg: rgba(23, 26, 33, 0.8);
+      --nav-bg: rgba(15, 17, 21, 0.85);
+      --font-body: 'Inter', sans-serif;
+      --font-heading: 'Plus Jakarta Sans', sans-serif;
+      --radius-card: 20px;
+      --radius-sm: 12px;
+      --shadow-card: 0 4px 24px rgba(91, 91, 214, 0.15);
+      --transition: all 0.25s ease;
+    }
+
+    .light-mode {
+      --bg: #F6F7FB;
+      --surface: #FFFFFF;
+      --surface-variant: #ECEEF5;
+      --text-primary: #1A1C22;
+      --text-muted: #5C6270;
+      --border: #D1D5E0;
+      --card-bg: rgba(255, 255, 255, 0.9);
+      --nav-bg: rgba(246, 247, 251, 0.9);
+    }
+
+    /* ===== RESET & BASE ===== */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 16px;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text-primary);
+      transition: background 0.3s, color 0.3s;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      cursor: pointer;
+      border: none;
+      background: none;
+      font-family: inherit;
+    }
+
+    img {
+      max-width: 100%;
+    }
+
+    ul {
+      list-style: none;
+    }
+
+    input,
+    textarea,
+    select {
+      font-family: inherit;
+    }
+
+    /* ===== PAGE SECTIONS ===== */
+    .page {
+      display: none;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    /* ===== NAVBAR ===== */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: var(--nav-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 1.5rem;
+      height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: var(--transition);
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--font-heading);
+      font-weight: 800;
+      font-size: 1.25rem;
+      color: var(--text-primary);
+    }
+
+    .nav-brand .brand-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, var(--nex-indigo), var(--nex-violet));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .nav-links a,
+    .nav-links button.nav-link-btn {
+      padding: 0.45rem 0.85rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      transition: var(--transition);
+      background: none;
+      border: none;
+    }
+
+    .nav-links a:hover,
+    .nav-links button.nav-link-btn:hover {
+      color: var(--text-primary);
+      background: var(--surface-variant);
+    }
+
+    .btn-play-nav {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.5rem 1.1rem;
+      background-color: #5B5BD6;
+      background-image: linear-gradient(135deg, #5B5BD6, #8B5CF6);
+      color: #fff !important;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      transition: var(--transition);
+      box-shadow: 0 2px 14px rgba(91, 91, 214, 0.45);
+      border: none;
+      position: relative;
+      isolation: isolate;
+      z-index: 0;
+    }
+
+    .btn-play-nav:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 22px rgba(91, 91, 214, 0.6);
+    }
+
+    .btn-play-nav i {
+      width: 14px;
+      height: 14px;
+    }
+
+    /* Light mode: explicit hard-coded colours so backdrop-filter compositing can't bleach the button */
+    .light-mode .btn-play-nav {
+      background-color: #5B5BD6 !important;
+      background-image: linear-gradient(135deg, #5B5BD6, #8B5CF6) !important;
+      color: #ffffff !important;
+      box-shadow: 0 4px 20px rgba(66, 66, 168, 0.6);
+    }
+
+    .light-mode .btn-play-nav:hover {
+      background-color: #4242A8 !important;
+      background-image: linear-gradient(135deg, #4242A8, #7b4de4) !important;
+      box-shadow: 0 6px 26px rgba(66, 66, 168, 0.7);
+    }
+
+    .theme-toggle {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: var(--surface-variant);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      transition: var(--transition);
+      border: 1px solid var(--border);
+    }
+
+    .theme-toggle:hover {
+      color: var(--text-primary);
+      background: var(--surface);
+    }
+
+    .theme-toggle i {
+      width: 16px;
+      height: 16px;
+    }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: var(--surface-variant);
+      border: 1px solid var(--border);
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+    }
+
+    .hamburger span {
+      display: block;
+      width: 18px;
+      height: 2px;
+      background: var(--text-primary);
+      border-radius: 2px;
+      transition: var(--transition);
+    }
+
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 68px;
+      left: 0;
+      right: 0;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 1.5rem;
+      flex-direction: column;
+      gap: 0.5rem;
+      z-index: 999;
+      animation: slideDown 0.25s ease;
+    }
+
+    .mobile-menu.open {
+      display: flex;
+    }
+
+    .mobile-menu a,
+    .mobile-menu button {
+      padding: 0.75rem 1rem;
+      border-radius: 10px;
+      background: none;
+      border: none;
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      text-align: left;
+      transition: var(--transition);
+    }
+
+    .mobile-menu a:hover,
+    .mobile-menu button:hover {
+      background: var(--surface-variant);
+    }
+
+    .mobile-menu .btn-play-nav {
+      justify-content: center;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ===== BUTTONS ===== */
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.85rem 1.75rem;
+      background: linear-gradient(135deg, var(--nex-indigo), var(--nex-violet));
+      color: #fff;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 1rem;
+      transition: var(--transition);
+      box-shadow: 0 4px 20px rgba(91, 91, 214, 0.35);
+      border: none;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(91, 91, 214, 0.5);
+    }
+
+    .btn-outline {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.85rem 1.75rem;
+      background: transparent;
+      color: var(--text-primary);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: 1rem;
+      transition: var(--transition);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--nex-indigo);
+      color: var(--nex-indigo);
+      background: rgba(91, 91, 214, 0.08);
+    }
+
+    /* ===== HERO ===== */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 100px 1.5rem 60px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -20%;
+      left: -10%;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(91, 91, 214, 0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: -10%;
+      right: -5%;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(139, 92, 246, 0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-text {
+      animation: heroFadeUp 0.8s ease both;
+    }
+
+    @keyframes heroFadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(91, 91, 214, 0.12);
+      border: 1px solid rgba(91, 91, 214, 0.25);
+      border-radius: 100px;
+      padding: 0.35rem 1rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--nex-indigo);
+      margin-bottom: 1.25rem;
+    }
+
+    .hero-eyebrow i {
+      width: 13px;
+      height: 13px;
+    }
+
+    .hero-headline {
+      font-family: var(--font-heading);
+      font-size: clamp(2.4rem, 5vw, 3.6rem);
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 1.25rem;
+      background: linear-gradient(135deg, #5B5BD6, #22D3EE);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      max-width: 480px;
+      margin-bottom: 2rem;
+      line-height: 1.7;
+    }
+
+    .hero-ctas {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+
+    .trust-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.35rem 0.85rem;
+      border-radius: 100px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      border: 1px solid;
+    }
+
+    .badge i {
+      width: 12px;
+      height: 12px;
+    }
+
+    .badge-green {
+      color: var(--nex-green);
+      border-color: rgba(34, 197, 94, 0.3);
+      background: rgba(34, 197, 94, 0.08);
+    }
+
+    .badge-indigo {
+      color: var(--nex-indigo);
+      border-color: rgba(91, 91, 214, 0.3);
+      background: rgba(91, 91, 214, 0.08);
+    }
+
+    .badge-cyan {
+      color: var(--nex-cyan);
+      border-color: rgba(34, 211, 238, 0.3);
+      background: rgba(34, 211, 238, 0.08);
+    }
+
+    .badge-violet {
+      color: var(--nex-violet);
+      border-color: rgba(139, 92, 246, 0.3);
+      background: rgba(139, 92, 246, 0.08);
+    }
+
+    .badge-amber {
+      color: var(--nex-amber);
+      border-color: rgba(245, 158, 11, 0.3);
+      background: rgba(245, 158, 11, 0.08);
+    }
+
+    /* Phone Mockup */
+    .phone-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      animation: heroFadeUp 0.8s ease 0.2s both;
+    }
+
+    .phone-frame {
+      width: 240px;
+      background: var(--surface);
+      border-radius: 38px;
+      border: 2.5px solid var(--border);
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+      padding: 22px 14px 18px;
+      position: relative;
+    }
+
+    .phone-notch {
+      width: 80px;
+      height: 10px;
+      background: var(--border);
+      border-radius: 10px;
+      margin: 0 auto 16px;
+    }
+
+    .phone-status {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.55rem;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      padding: 0 2px;
+    }
+
+    .phone-app-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-bottom: 12px;
+      padding: 0 2px;
+    }
+
+    .phone-app-title {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: 0.7rem;
+      color: var(--text-primary);
+    }
+
+    .phone-app-icon {
+      width: 20px;
+      height: 20px;
+      background: linear-gradient(135deg, var(--nex-indigo), var(--nex-violet));
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.6rem;
+    }
+
+    .phone-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .phone-tile {
+      background: var(--surface-variant);
+      border-radius: 12px;
+      padding: 10px 8px;
+      transition: var(--transition);
+    }
+
+    .phone-tile:hover {
+      transform: scale(1.03);
+    }
+
+    .tile-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 6px;
+    }
+
+    .tile-icon i {
+      width: 14px;
+      height: 14px;
+      color: #fff;
+    }
+
+    .tile-title {
+      font-size: 0.6rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .tile-sub {
+      font-size: 0.5rem;
+      color: var(--text-muted);
+    }
+
+    .tile-indigo .tile-icon {
+      background: var(--nex-indigo);
+    }
+
+    .tile-violet .tile-icon {
+      background: var(--nex-violet);
+    }
+
+    .tile-green .tile-icon {
+      background: var(--nex-green);
+    }
+
+    .ledger-card {
+      background: var(--surface-variant);
+      border-radius: 12px;
+      padding: 10px;
+      border: 1px solid rgba(34, 197, 94, 0.2);
+    }
+
+    .ledger-label {
+      font-size: 0.5rem;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .ledger-value {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--nex-green);
+    }
+
+    .ledger-files {
+      font-size: 0.55rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* ===== SECTION COMMON ===== */
+    section {
+      padding: 6rem 1.5rem;
+    }
+
+    .section-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 3.5rem;
+    }
+
+    .section-eyebrow {
+      display: inline-block;
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--nex-indigo);
+      margin-bottom: 0.75rem;
+    }
+
+    .section-title {
+      font-family: var(--font-heading);
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 0.75rem;
+    }
+
+    .section-desc {
+      color: var(--text-muted);
+      max-width: 560px;
+      margin: 0 auto;
+      font-size: 1rem;
+    }
+
+    /* ===== FEATURES ===== */
+    .features {
+      background: var(--surface);
+    }
+
+    .feature-tabs {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 2.5rem;
+    }
+
+    .tab-btn {
+      padding: 0.6rem 1.4rem;
+      border-radius: 100px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      background: var(--surface-variant);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      transition: var(--transition);
+    }
+
+    .tab-btn.active,
+    .tab-btn:hover {
+      background: var(--nex-indigo);
+      color: #fff;
+      border-color: var(--nex-indigo);
+    }
+
+    .tab-btn.active-violet {
+      background: var(--nex-violet);
+      border-color: var(--nex-violet);
+    }
+
+    .tab-btn.active-amber {
+      background: var(--nex-amber);
+      border-color: var(--nex-amber);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 0.35s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .feature-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-card);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-card);
+      transition: var(--transition);
+    }
+
+    .light-mode .feature-card {
+      border-color: var(--border);
+    }
+
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 36px rgba(91, 91, 214, 0.2);
+    }
+
+    .feature-card-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+
+    .feature-card-icon i {
+      width: 20px;
+      height: 20px;
+      color: #fff;
+    }
+
+    .feature-card-icon.indigo {
+      background: linear-gradient(135deg, var(--nex-indigo), #7575e0);
+    }
+
+    .feature-card-icon.violet {
+      background: linear-gradient(135deg, var(--nex-violet), #a67ff8);
+    }
+
+    .feature-card-icon.amber {
+      background: linear-gradient(135deg, var(--nex-amber), #f7b731);
+    }
+
+    .feature-card h3 {
+      font-family: var(--font-heading);
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+      color: var(--text-primary);
+    }
+
+    .feature-card p {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      line-height: 1.65;
+    }
+
+    .online-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.2rem 0.6rem;
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      border-radius: 100px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--nex-amber);
+      margin-bottom: 0.5rem;
+    }
+
+    .online-badge i {
+      width: 10px;
+      height: 10px;
+    }
+
+    .online-note {
+      text-align: center;
+      margin-top: 1.5rem;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      background: rgba(245, 158, 11, 0.07);
+      border: 1px solid rgba(245, 158, 11, 0.15);
+      border-radius: var(--radius-sm);
+      padding: 1rem 1.5rem;
+      max-width: 640px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* ===== HOW IT WORKS ===== */
+    .how-it-works {}
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+      position: relative;
+    }
+
+    .steps::before {
+      content: '';
+      position: absolute;
+      top: 36px;
+      left: calc(16.67% + 36px);
+      right: calc(16.67% + 36px);
+      height: 2px;
+      background: linear-gradient(90deg, var(--nex-indigo), var(--nex-violet));
+      opacity: 0.4;
+    }
+
+    .step {
+      text-align: center;
+      padding: 1.5rem;
+    }
+
+    .step-num {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--nex-indigo), var(--nex-violet));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-heading);
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #fff;
+      margin: 0 auto 1.25rem;
+      box-shadow: 0 8px 24px rgba(91, 91, 214, 0.3);
+      position: relative;
+      z-index: 1;
+    }
+
+    .step h3 {
+      font-family: var(--font-heading);
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: var(--text-primary);
+    }
+
+    .step p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      line-height: 1.65;
+    }
+
+    /* ===== PRIVACY HIGHLIGHT ===== */
+    .privacy-highlight {
+      background: var(--surface);
+      border-left: 4px solid var(--nex-indigo);
+      padding: 5rem 1.5rem;
+    }
+
+    .privacy-highlight .section-inner {
+      max-width: 1100px;
+    }
+
+    .privacy-headline {
+      font-family: var(--font-heading);
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      font-weight: 800;
+      margin-bottom: 1rem;
+      color: var(--text-primary);
+    }
+
+    .privacy-para {
+      color: var(--text-muted);
+      max-width: 760px;
+      margin-bottom: 2.5rem;
+      font-size: 1rem;
+      line-height: 1.75;
+    }
+
+    .privacy-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+
+    .privacy-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-card);
+      padding: 1.5rem;
+      transition: var(--transition);
+    }
+
+    .light-mode .privacy-card {
+      border-color: var(--border);
+    }
+
+    .privacy-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .privacy-card-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+
+    .privacy-card-icon i {
+      width: 20px;
+      height: 20px;
+      color: #fff;
+    }
+
+    .privacy-card-icon.green {
+      background: linear-gradient(135deg, var(--nex-green), #28e06b);
+    }
+
+    .privacy-card-icon.indigo {
+      background: linear-gradient(135deg, var(--nex-indigo), #7575e0);
+    }
+
+    .privacy-card-icon.cyan {
+      background: linear-gradient(135deg, var(--nex-cyan), #44dcf0);
+    }
+
+    .privacy-card h3 {
+      font-family: var(--font-heading);
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: var(--text-primary);
+    }
+
+    .privacy-card p {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      line-height: 1.65;
+    }
+
+    /* ===== STATS ===== */
+    .stats-section {
+      padding: 4rem 1.5rem;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+    }
+
+    .stat-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-card);
+      padding: 2rem 1.5rem;
+      text-align: center;
+      box-shadow: var(--shadow-card);
+      transition: var(--transition);
+    }
+
+    .light-mode .stat-card {
+      border-color: var(--border);
+    }
+
+    .stat-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .stat-value {
+      font-family: var(--font-heading);
+      font-size: 2.8rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--nex-indigo), var(--nex-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* ===== FOOTER ===== */
+    footer {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 3rem 1.5rem 2rem;
+    }
+
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 2rem;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    .footer-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--font-heading);
+      font-weight: 800;
+      font-size: 1.1rem;
+    }
+
+    .footer-brand-icon {
+      width: 30px;
+      height: 30px;
+      background: linear-gradient(135deg, var(--nex-indigo), var(--nex-violet));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+    }
+
+    .footer-copy {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 1.5rem;
+      justify-content: center;
+    }
+
+    .footer-links a,
+    .footer-links button {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      transition: var(--transition);
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    .footer-links a:hover,
+    .footer-links button:hover {
+      color: var(--nex-indigo);
+    }
+
+    .footer-right {
+      text-align: right;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    .footer-bottom {
+      max-width: 1200px;
+      margin: 0 auto;
+      border-top: 1px solid var(--border);
+      padding-top: 1.25rem;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* ===== PRIVACY PAGE ===== */
+    .policy-page {
+      padding: 120px 1.5rem 80px;
+    }
+
+    .policy-inner {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .policy-header {
+      margin-bottom: 2.5rem;
+    }
+
+    .policy-title {
+      font-family: var(--font-heading);
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .policy-subtitle {
+      font-size: 1rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+
+    .policy-dates {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .policy-tldr {
+      background: rgba(34, 197, 94, 0.08);
+      border: 1px solid rgba(34, 197, 94, 0.25);
+      border-radius: var(--radius-sm);
+      padding: 1rem 1.25rem;
+      margin-bottom: 2.5rem;
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+      font-size: 0.9rem;
+      color: var(--nex-green);
+    }
+
+    .policy-tldr i {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .policy-section {
+      margin-bottom: 2.5rem;
+    }
+
+    .policy-section h2 {
+      font-family: var(--font-heading);
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--nex-indigo);
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .policy-section p {
+      color: var(--text-muted);
+      line-height: 1.75;
+      margin-bottom: 0.75rem;
+      font-size: 0.95rem;
+    }
+
+    .policy-section ul {
+      list-style: disc;
+      padding-left: 1.5rem;
+      color: var(--text-muted);
+      line-height: 1.75;
+    }
+
+    .policy-section ul li {
+      margin-bottom: 0.35rem;
+      font-size: 0.95rem;
+    }
+
+    .policy-section code {
+      background: var(--surface-variant);
+      border-radius: 4px;
+      padding: 0.15em 0.45em;
+      font-size: 0.85em;
+      font-family: 'Courier New', monospace;
+      color: var(--nex-cyan);
+    }
+
+    .policy-section a {
+      color: var(--nex-indigo);
+      text-decoration: underline;
+    }
+
+    .perm-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 0.75rem;
+    }
+
+    .perm-table th,
+    .perm-table td {
+      text-align: left;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border);
+      font-size: 0.88rem;
+    }
+
+    .perm-table th {
+      background: var(--surface-variant);
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .perm-table td {
+      color: var(--text-muted);
+    }
+
+    .perm-table td:first-child {
+      font-family: 'Courier New', monospace;
+      color: var(--nex-cyan);
+      font-size: 0.82rem;
+    }
+
+    /* ===== SUPPORT PAGE ===== */
+    .support-page {
+      padding: 120px 1.5rem 80px;
+    }
+
+    .support-inner {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .support-header {
+      margin-bottom: 3rem;
+    }
+
+    .support-title {
+      font-family: var(--font-heading);
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .support-subtitle {
+      font-size: 1rem;
+      color: var(--text-muted);
+    }
+
+    .faq-section {
+      margin-bottom: 3.5rem;
+    }
+
+    .faq-section-title {
+      font-family: var(--font-heading);
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 1.25rem;
+    }
+
+    .faq-item {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      margin-bottom: 0.75rem;
+      overflow: hidden;
+      transition: var(--transition);
+    }
+
+    .faq-item:hover {
+      border-color: rgba(91, 91, 214, 0.35);
+    }
+
+    .faq-question {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.1rem 1.25rem;
+      cursor: pointer;
+      gap: 1rem;
+    }
+
+    .faq-question span {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--text-primary);
+    }
+
+    .faq-chevron {
+      flex-shrink: 0;
+      width: 18px;
+      height: 18px;
+      color: var(--text-muted);
+      transition: transform 0.3s ease;
+    }
+
+    .faq-item.open .faq-chevron {
+      transform: rotate(180deg);
+    }
+
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s ease, padding 0.35s ease;
+      padding: 0 1.25rem;
+    }
+
+    .faq-item.open .faq-answer {
+      max-height: 300px;
+      padding: 0 1.25rem 1.1rem;
+    }
+
+    .faq-answer p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      line-height: 1.7;
+    }
+
+    .faq-answer a {
+      color: var(--nex-indigo);
+      text-decoration: underline;
+    }
+
+    /* Contact Form */
+    .contact-form-section {
+      margin-bottom: 3rem;
+    }
+
+    .contact-form-title {
+      font-family: var(--font-heading);
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 1.25rem;
+    }
+
+    .contact-form {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 2rem;
+      backdrop-filter: blur(20px);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.4rem;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      background: var(--surface-variant);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0.7rem 1rem;
+      color: var(--text-primary);
+      font-size: 0.9rem;
+      transition: var(--transition);
+      outline: none;
+      -webkit-appearance: none;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: var(--nex-indigo);
+      box-shadow: 0 0 0 3px rgba(91, 91, 214, 0.15);
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+
+    .form-submit-btn {
+      width: 100%;
+      padding: 0.85rem;
+      background: linear-gradient(135deg, var(--nex-indigo), var(--nex-violet));
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: 0 4px 16px rgba(91, 91, 214, 0.3);
+    }
+
+    .form-submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(91, 91, 214, 0.45);
+    }
+
+    .form-note {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 0.75rem;
+      text-align: center;
+    }
+
+    /* Contact Info Cards */
+    .contact-info {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .contact-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 1.25rem;
+      text-align: center;
+      transition: var(--transition);
+    }
+
+    .contact-card:hover {
+      border-color: rgba(91, 91, 214, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .contact-card-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: rgba(91, 91, 214, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 0.75rem;
+      color: var(--nex-indigo);
+    }
+
+    .contact-card-icon i {
+      width: 18px;
+      height: 18px;
+    }
+
+    .contact-card h4 {
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.25rem;
+    }
+
+    .contact-card p {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .contact-card a {
+      color: var(--nex-indigo);
+      font-size: 0.82rem;
+      text-decoration: underline;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+      }
+
+      .hamburger {
+        display: flex;
+      }
+
+      .hero-inner {
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 2.5rem;
+      }
+
+      .hero-text {
+        order: 2;
+      }
+
+      .phone-wrapper {
+        order: 1;
+      }
+
+      .hero-ctas {
+        justify-content: center;
+      }
+
+      .trust-badges {
+        justify-content: center;
+      }
+
+      .hero-sub {
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .steps {
+        grid-template-columns: 1fr;
+      }
+
+      .steps::before {
+        display: none;
+      }
+
+      .privacy-cards {
+        grid-template-columns: 1fr;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .footer-inner {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+
+      .footer-right {
+        text-align: center;
+      }
+
+      .footer-links {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+
+      .contact-info {
+        grid-template-columns: 1fr;
+      }
+
+      .phone-frame {
+        width: 200px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .stats-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .hero-ctas {
+        flex-direction: column;
+      }
+
+      .btn-primary,
+      .btn-outline {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+    @media (min-width: 1280px) {
+      .feature-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    /* ===== FOCUS STYLES ===== */
+    :focus-visible {
+      outline: 2px solid var(--nex-indigo);
+      outline-offset: 3px;
+    }
+
+    a:focus-visible,
+    button:focus-visible {
+      outline: 2px solid var(--nex-indigo);
+      outline-offset: 3px;
+    }
+
+    /* Smooth scroll for page sections */
+    .page-transition {
+      animation: fadeIn 0.3s ease;
+    }
+
+    /* Stagger for feature cards */
+    .feature-card:nth-child(1) {
+      animation-delay: 0s;
+    }
+
+    .feature-card:nth-child(2) {
+      animation-delay: 0.07s;
+    }
+
+    .feature-card:nth-child(3) {
+      animation-delay: 0.14s;
+    }
+
+    .feature-card:nth-child(4) {
+      animation-delay: 0.21s;
+    }
+
+    .feature-card:nth-child(5) {
+      animation-delay: 0.28s;
+    }
+
+    .feature-card:nth-child(6) {
+      animation-delay: 0.35s;
+    }
+
+    .feature-card:nth-child(7) {
+      animation-delay: 0.42s;
+    }
+
+    .feature-card:nth-child(8) {
+      animation-delay: 0.49s;
+    }
+
+    .feature-card:nth-child(9) {
+      animation-delay: 0.56s;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ===== NAVBAR ===== -->
+  <nav class="navbar" role="navigation" aria-label="Main navigation">
+    <div class="nav-brand">
+      <div class="nav-brand-icon brand-icon" aria-hidden="true">⚡</div>
+      NexCompress
+    </div>
+    <div class="nav-links" id="desktopNav">
+      <button class="nav-link-btn" onclick="navigate('home')" aria-label="Go to home page">Home</button>
+      <button class="nav-link-btn" onclick="scrollToSection('features')" aria-label="View features">Features</button>
+      <button class="nav-link-btn" onclick="navigate('privacy')" aria-label="Read privacy policy">Privacy</button>
+      <button class="nav-link-btn" onclick="navigate('support')" aria-label="Get support">Support</button>
+      <a href="#" class="btn-play-nav" aria-label="Get NexCompress on Google Play Store">
+        <i data-lucide="play" aria-hidden="true"></i> Get it on Google Play
+      </a>
+      <button class="theme-toggle" id="themeToggleDesktop" onclick="toggleTheme()"
+        aria-label="Toggle dark and light mode">
+        <i data-lucide="moon" aria-hidden="true"></i>
+      </button>
+    </div>
+    <button class="hamburger" id="hamburgerBtn" onclick="toggleMobileMenu()" aria-label="Open navigation menu"
+      aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobileMenu" role="menu" aria-label="Mobile navigation">
+    <button onclick="navigate('home'); closeMobileMenu();" role="menuitem">Home</button>
+    <button onclick="scrollToSection('features'); closeMobileMenu();" role="menuitem">Features</button>
+    <button onclick="navigate('privacy'); closeMobileMenu();" role="menuitem">Privacy Policy</button>
+    <button onclick="navigate('support'); closeMobileMenu();" role="menuitem">Support</button>
+    <a href="#" class="btn-play-nav" role="menuitem" aria-label="Download NexCompress on Google Play">
+      <i data-lucide="play" aria-hidden="true"></i> Get it on Google Play
+    </a>
+    <button onclick="toggleTheme(); closeMobileMenu();" role="menuitem">Toggle Theme</button>
+  </div>
+
+  <!-- ============================= -->
+  <!-- PAGE 1: HOME / LANDING PAGE  -->
+  <!-- ============================= -->
+  <div class="page active" id="page-home">
+
+    <!-- HERO -->
+    <section class="hero" id="home" aria-label="Hero section">
+      <div class="hero-inner">
+        <div class="hero-text">
+          <div class="hero-eyebrow">
+            <i data-lucide="shield-check" aria-hidden="true"></i>
+            Privacy-First · 100% On-Device
+          </div>
+          <h1 class="hero-headline">Your Files. Your Device. Your Privacy.</h1>
+          <p class="hero-sub">NexCompress is a powerful, offline-first PDF and image utility for Android. Compress,
+            convert, sign, edit, merge, split and protect your files — entirely on your device. No account. No uploads.
+            No cloud.</p>
+          <div class="hero-ctas">
+            <a href="#" class="btn-primary" id="heroPlayBtn" aria-label="Download NexCompress on Google Play Store">
+              <i data-lucide="play" aria-hidden="true"></i> Download on Google Play
+            </a>
+            <button class="btn-outline" onclick="navigate('privacy')" id="heroPrivacyBtn"
+              aria-label="Read the NexCompress privacy policy">
+              <i data-lucide="file-lock" aria-hidden="true"></i> View Privacy Policy
+            </button>
+          </div>
+          <div class="trust-badges" role="list" aria-label="App trust features">
+            <span class="badge badge-green" role="listitem"><i data-lucide="lock" aria-hidden="true"></i> 100%
+              On-Device</span>
+            <span class="badge badge-indigo" role="listitem"><i data-lucide="user-x" aria-hidden="true"></i> No Account
+              Required</span>
+            <span class="badge badge-cyan" role="listitem"><i data-lucide="cloud-off" aria-hidden="true"></i> No File
+              Uploads</span>
+            <span class="badge badge-violet" role="listitem"><i data-lucide="smartphone" aria-hidden="true"></i> Android
+              8.0+</span>
+            <span class="badge badge-amber" role="listitem"><i data-lucide="zap" aria-hidden="true"></i> Kotlin 2.0 +
+              Compose</span>
+          </div>
+        </div>
+        <!-- CSS Phone Mockup -->
+        <div class="phone-wrapper" aria-label="NexCompress app UI preview">
+          <div class="phone-frame">
+            <div class="phone-notch" aria-hidden="true"></div>
+            <div class="phone-status" aria-hidden="true">
+              <span>9:41</span><span>● ● ●</span>
+            </div>
+            <div class="phone-app-bar">
+              <div class="phone-app-icon" aria-hidden="true">⚡</div>
+              <div class="phone-app-title">NexCompress</div>
+            </div>
+            <div class="phone-grid" aria-hidden="true">
+              <div class="phone-tile tile-indigo">
+                <div class="tile-icon"><i data-lucide="file-minus"></i></div>
+                <div class="tile-title">Compress PDF</div>
+                <div class="tile-sub">Reduce size →</div>
+              </div>
+              <div class="phone-tile tile-violet">
+                <div class="tile-icon"><i data-lucide="refresh-cw"></i></div>
+                <div class="tile-title">Convert Images</div>
+                <div class="tile-sub">Batch convert →</div>
+              </div>
+              <div class="phone-tile tile-green">
+                <div class="tile-icon"><i data-lucide="pen-line"></i></div>
+                <div class="tile-title">Sign PDF</div>
+                <div class="tile-sub">Finger draw →</div>
+              </div>
+              <div class="phone-tile tile-indigo">
+                <div class="tile-icon"><i data-lucide="layers"></i></div>
+                <div class="tile-title">Edit PDF</div>
+                <div class="tile-sub">Pages editor →</div>
+              </div>
+            </div>
+            <div class="ledger-card" aria-hidden="true">
+              <div class="ledger-label">Performance Ledger</div>
+              <div class="ledger-value">142.6 MB Reclaimed</div>
+              <div class="ledger-files">87 Files Processed</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURES SECTION -->
+    <section class="features" id="features" aria-label="App features">
+      <div class="section-inner">
+        <div class="section-header">
+          <div class="section-eyebrow">Capabilities</div>
+          <h2 class="section-title">Everything You Need. Nothing You Don't.</h2>
+          <p class="section-desc">16 powerful tools — 11 work completely offline, 5 optional online conversions.</p>
+        </div>
+        <div class="feature-tabs" role="tablist" aria-label="Feature categories">
+          <button class="tab-btn active" onclick="showTab('pdf')" role="tab" aria-selected="true"
+            aria-controls="tab-pdf" id="tab-btn-pdf">📄 PDF Tools</button>
+          <button class="tab-btn" onclick="showTab('image')" role="tab" aria-selected="false" aria-controls="tab-image"
+            id="tab-btn-image">🖼️ Image Tools</button>
+          <button class="tab-btn" onclick="showTab('online')" role="tab" aria-selected="false"
+            aria-controls="tab-online" id="tab-btn-online">🌐 Online Conversions</button>
+        </div>
+
+        <!-- PDF Tools Tab -->
+        <div class="tab-content active" id="tab-pdf" role="tabpanel" aria-labelledby="tab-btn-pdf">
+          <div class="feature-grid">
+            <div class="feature-card">
+              <div class="feature-card-icon indigo"><i data-lucide="file-minus" aria-hidden="true"></i></div>
+              <h3>Compress PDF</h3>
+              <p>Reduce PDF file size with 3 quality profiles: Recommended, Balanced, or High-Fidelity. Guaranteed never
+                to produce a file larger than the original.</p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-card-icon indigo"><i data-lucide="pen-line" aria-hidden="true"></i></div>
+              <h3>Sign PDF</h3>
+              <p>Draw your signature with your finger, then drag &amp; resize it onto any page. The signed page is
+                flattened; all other pages remain perfectly lossless.</p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-card-icon indigo"><i data-lucide="layers" aria-hidden="true"></i></div>
+              <h3>Edit PDF Pages</h3>
+              <p>Drag to reorder, rotate, or delete individual pages from any PDF, then export the result.</p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-card-icon indigo"><i data-lucide="git-merge" aria-hidden="true"></i></div>
+              <h3>Merge PDFs</h3>
+              <p>Combine multiple PDFs into a single document with drag-to-reorder page previews before merging.</p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-card-icon indigo"><i data-lucide="scissors" aria-hidden="true"></i></div>
+              <h3>Split PDF</h3>
+              <p>Extract a specific set of pages, or burst every page into its own separate PDF file.</p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-card-icon indigo"><i data-lucide="lock" aria-hidden="true"></i></div>
+              <h3>Protect PDF</h3>
+              <p>Lock any PDF with AES-standard password encryption, or unlock a protected PDF. Your password never
+                leaves your device.</p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-card-icon indigo"><i data-lucide="image" aria-hidden="true"></i></div>
+              <h3>PDF → Images</h3>
+              <p>Export every page of any PDF as high-quality JPG, PNG, or WebP images.</p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-card-icon indigo"><i data-lucide="file-text" aria-hidden="true"></i></div>
+              <h3>Text → PDF</h3>
+              <p>Convert any .txt file into a clean, paginated, print-ready A4 PDF document.</p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-card-icon indigo"><i data-lucide="file-plus" aria-hidden="true"></i></div>
+              <h3>Images → PDF</h3>
+              <p>Combine multiple photos into a single multi-page PDF with reorderable pages.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Image Tools Tab -->
+        <div class="tab-content" id="tab-image" role="tabpanel" aria-labelledby="tab-btn-image">
+          <div class="feature-grid">
+            <div class="feature-card">
+              <div class="feature-card-icon violet"><i data-lucide="refresh-cw" aria-hidden="true"></i></div>
+              <h3>Convert Images</h3>
+              <p>Batch convert up to 5 images (JPG, PNG, HEIC, BMP, WebP) to JPG, PNG, or WebP in one go. Per-file
+                rename and drag-to-reorder.</p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-card-icon violet"><i data-lucide="crop" aria-hidden="true"></i></div>
+              <h3>Image Studio</h3>
+              <p>Rotate, flip, crop (with a draggable crop frame), and resize any image. Re-encode to JPG, PNG, or WebP
+                at your chosen quality.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Online Conversions Tab -->
+        <div class="tab-content" id="tab-online" role="tabpanel" aria-labelledby="tab-btn-online">
+          <div class="feature-grid">
+            <div class="feature-card">
+              <div class="online-badge"><i data-lucide="wifi" aria-hidden="true"></i> Online</div>
+              <div class="feature-card-icon amber"><i data-lucide="file-code" aria-hidden="true"></i></div>
+              <h3>Word → PDF</h3>
+              <p>Convert Microsoft Word documents (.docx) to PDF format using an optional API key.</p>
+            </div>
+            <div class="feature-card">
+              <div class="online-badge"><i data-lucide="wifi" aria-hidden="true"></i> Online</div>
+              <div class="feature-card-icon amber"><i data-lucide="file-code-2" aria-hidden="true"></i></div>
+              <h3>PDF → Word</h3>
+              <p>Convert any PDF back to an editable Microsoft Word document.</p>
+            </div>
+            <div class="feature-card">
+              <div class="online-badge"><i data-lucide="wifi" aria-hidden="true"></i> Online</div>
+              <div class="feature-card-icon amber"><i data-lucide="presentation" aria-hidden="true"></i></div>
+              <h3>PowerPoint → PDF</h3>
+              <p>Convert PowerPoint presentations (.pptx) to PDF for easy sharing and viewing.</p>
+            </div>
+            <div class="feature-card">
+              <div class="online-badge"><i data-lucide="wifi" aria-hidden="true"></i> Online</div>
+              <div class="feature-card-icon amber"><i data-lucide="table" aria-hidden="true"></i></div>
+              <h3>Excel → PDF</h3>
+              <p>Convert Excel spreadsheets (.xlsx) to cleanly formatted PDF documents.</p>
+            </div>
+            <div class="feature-card">
+              <div class="online-badge"><i data-lucide="wifi" aria-hidden="true"></i> Online</div>
+              <div class="feature-card-icon amber"><i data-lucide="layout" aria-hidden="true"></i></div>
+              <h3>PDF → PowerPoint</h3>
+              <p>Convert a PDF back to an editable PowerPoint presentation.</p>
+            </div>
+            <div class="feature-card">
+              <div class="online-badge"><i data-lucide="wifi" aria-hidden="true"></i> Online</div>
+              <div class="feature-card-icon amber"><i data-lucide="grid" aria-hidden="true"></i></div>
+              <h3>PDF → Excel</h3>
+              <p>Extract tabular data from PDFs and convert them into Excel spreadsheets.</p>
+            </div>
+          </div>
+          <div class="online-note" role="note">
+            <i data-lucide="info" aria-hidden="true"
+              style="width:14px;height:14px;display:inline;vertical-align:middle;margin-right:4px;"></i>
+            Online conversions require an internet connection and an optional API key. Without a key, they run in
+            built-in demo mode. All core PDF and image features are 100% offline.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section aria-label="How NexCompress works">
+      <div class="section-inner">
+        <div class="section-header">
+          <div class="section-eyebrow">Workflow</div>
+          <h2 class="section-title">Simple. Fast. Private.</h2>
+          <p class="section-desc">Three steps from file to done — no sign-up, no waiting, no cloud.</p>
+        </div>
+        <div class="steps how-it-works" role="list">
+          <div class="step" role="listitem">
+            <div class="step-num" aria-hidden="true">1</div>
+            <h3>Pick a Tool</h3>
+            <p>Open NexCompress, tap any tool from the home screen tiles or the full-feature side drawer.</p>
+          </div>
+          <div class="step" role="listitem">
+            <div class="step-num" aria-hidden="true">2</div>
+            <h3>Select Your File(s)</h3>
+            <p>The system file picker opens. Choose your PDF, images, or text file directly from your device storage.
+            </p>
+          </div>
+          <div class="step" role="listitem">
+            <div class="step-num" aria-hidden="true">3</div>
+            <h3>Process &amp; Save</h3>
+            <p>Your file is processed 100% on-device in seconds. Save to Downloads/NexCompress, share, rename, or
+              re-download from the history ledger.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRIVACY HIGHLIGHT -->
+    <section class="privacy-highlight" aria-label="Privacy commitment">
+      <div class="section-inner">
+        <div class="section-eyebrow">Privacy First</div>
+        <h2 class="privacy-headline">Your files never leave your phone.</h2>
+        <p class="privacy-para">NexCompress processes every PDF compression, image conversion, signature, merge, split,
+          protect, and edit operation entirely on your device using native Android APIs and the open-source
+          PDFBox-Android engine. No file, page, or byte of your documents is ever uploaded to any server. The only
+          network connection the app makes is to Google's AdMob SDK to display ads.</p>
+        <div class="privacy-cards" role="list" aria-label="Privacy features">
+          <div class="privacy-card" role="listitem">
+            <div class="privacy-card-icon green"><i data-lucide="cpu" aria-hidden="true"></i></div>
+            <h3>On-Device Engine</h3>
+            <p>PDFBox-Android handles all lossless PDF operations. Native Android BitmapFactory handles all image
+              processing. Zero cloud dependencies.</p>
+          </div>
+          <div class="privacy-card" role="listitem">
+            <div class="privacy-card-icon indigo"><i data-lucide="folder-lock" aria-hidden="true"></i></div>
+            <h3>No Storage Permissions</h3>
+            <p>NexCompress uses Android's Scoped Storage (Storage Access Framework). You pick files through the system
+              picker — the app never gets broad access to your storage.</p>
+          </div>
+          <div class="privacy-card" role="listitem">
+            <div class="privacy-card-icon cyan"><i data-lucide="user-x" aria-hidden="true"></i></div>
+            <h3>No Account. No Sign-In.</h3>
+            <p>There is no user account, no registration, no email, and no login. The app works fully anonymously from
+              the moment you install it.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STATS -->
+    <section class="stats-section" aria-label="App statistics">
+      <div class="section-inner">
+        <div class="stats-grid" role="list" aria-label="NexCompress by the numbers">
+          <div class="stat-card" role="listitem">
+            <div class="stat-value" id="stat-tools" data-target="14" data-suffix="+">0</div>
+            <div class="stat-label">On-Device Tools</div>
+          </div>
+          <div class="stat-card" role="listitem">
+            <div class="stat-value" id="stat-uploads" data-target="0" data-suffix="">0</div>
+            <div class="stat-label">File Uploads to Cloud</div>
+          </div>
+          <div class="stat-card" role="listitem">
+            <div class="stat-value" id="stat-perms" data-target="0" data-suffix="">0</div>
+            <div class="stat-label">Storage Permissions Required</div>
+          </div>
+          <div class="stat-card" role="listitem">
+            <div class="stat-value" id="stat-ondevice" data-target="100" data-suffix="%">0</div>
+            <div class="stat-label">On-Device Processing</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer role="contentinfo">
+      <div class="footer-inner">
+        <div>
+          <div class="footer-brand">
+            <div class="footer-brand-icon" aria-hidden="true">⚡</div>
+            NexCompress
+          </div>
+          <div class="footer-copy">© 2026 Krish Bahukhandi. All rights reserved.</div>
+        </div>
+        <div class="footer-links" role="navigation" aria-label="Footer navigation">
+          <button onclick="navigate('privacy')" aria-label="Privacy Policy">Privacy Policy</button>
+          <button onclick="navigate('support')" aria-label="Support">Support</button>
+          <a href="https://github.com/KrishBahukhandi/NexCompressor" target="_blank" rel="noopener noreferrer"
+            aria-label="NexCompress on GitHub">GitHub</a>
+        </div>
+        <div class="footer-right">Requires Android 8.0 (API 26) or higher</div>
+      </div>
+      <div class="footer-bottom">Made with ❤️ in India</div>
+    </footer>
+  </div>
+
+  <!-- ========================== -->
+  <!-- PAGE 2: PRIVACY POLICY     -->
+  <!-- ========================== -->
+  <div class="page" id="page-privacy">
+    <div class="policy-page page-transition">
+      <div class="policy-inner">
+        <div class="policy-header">
+          <h1 class="policy-title">Privacy Policy</h1>
+          <p class="policy-subtitle">NexCompress — Offline File Utility &amp; Converter</p>
+          <div class="policy-dates">
+            <span>Last updated: June 2026</span>
+            <span>Effective date: June 2026</span>
+          </div>
+        </div>
+
+        <div class="policy-tldr" role="note" aria-label="Privacy summary">
+          <i data-lucide="shield-check" aria-hidden="true"></i>
+          <span><strong>Short version:</strong> NexCompress does not collect, store, or transmit any of your personal
+            data or files. Everything runs on your device.</span>
+        </div>
+
+        <div class="policy-section">
+          <h2>1. Who We Are</h2>
+          <p>NexCompress is developed and published by <strong>Krish Bahukhandi</strong> ("Developer", "we", "us"). The
+            app package identifier is <code>com.nexcompress.app</code>.</p>
+        </div>
+
+        <div class="policy-section">
+          <h2>2. What Data We Collect</h2>
+          <p>NexCompress collects <strong>no personal data</strong> from users.</p>
+          <p>Specifically, we do <strong>not</strong> collect:</p>
+          <ul>
+            <li>Names, email addresses, phone numbers, or any contact information</li>
+            <li>Location data (coarse or precise)</li>
+            <li>Identifiers (device ID, advertising ID, IMEI, etc.) beyond what AdMob requires (see Section 5)</li>
+            <li>File content, filenames, or metadata from documents you process</li>
+            <li>Usage analytics or crash reports (no analytics SDK is integrated)</li>
+            <li>Any data that could be linked to a real-world identity</li>
+          </ul>
+        </div>
+
+        <div class="policy-section">
+          <h2>3. How Files Are Processed</h2>
+          <p>All file processing — PDF compression, image conversion, PDF signing, page editing, merging, splitting,
+            password protection, and Image Studio operations — is performed <strong>entirely on-device</strong> using:
+          </p>
+          <ul>
+            <li>Native Android APIs (<code>android.graphics</code>, <code>android.media</code>)</li>
+            <li>PDFBox-Android (open-source, offline PDF engine by Tom Roush, Apache-2.0)</li>
+            <li>Kotlin Coroutines on <code>Dispatchers.IO</code></li>
+          </ul>
+          <p>Your files are <strong>never uploaded</strong>, <strong>never transmitted</strong>, and <strong>never
+              stored</strong> on any external server. Output files are written to the <code>Downloads/NexCompress</code>
+            directory on your device using Android Scoped Storage. The app holds only temporary URI permissions granted
+            by the Android system via the Storage Access Framework — it does <strong>not</strong> have broad storage
+            access.</p>
+        </div>
+
+        <div class="policy-section">
+          <h2>4. Local Storage (Room Database)</h2>
+          <p>NexCompress stores a local compression history ledger in a Room (SQLite) database on your device. This
+            ledger records:</p>
+          <ul>
+            <li>The name and type of processed files</li>
+            <li>The file size before and after processing</li>
+            <li>The URI of the output file (local on your device)</li>
+            <li>The timestamp of the operation</li>
+          </ul>
+          <p>This data exists solely on your device and is never transmitted anywhere. You can delete any history entry
+            at any time from within the app.</p>
+        </div>
+
+        <div class="policy-section">
+          <h2>5. Advertising (Google AdMob)</h2>
+          <p>NexCompress displays ads through the <strong>Google AdMob SDK</strong>. This is the <strong>only</strong>
+            component of the app that makes network connections. AdMob may collect:</p>
+          <ul>
+            <li>Approximate location (country/region) based on IP address</li>
+            <li>Advertising ID (<code>AD_ID</code>), used for ad personalization</li>
+            <li>Device information (OS version, screen size, etc.)</li>
+          </ul>
+          <p>The <code>INTERNET</code>, <code>ACCESS_NETWORK_STATE</code>, and <code>AD_ID</code> permissions in the app
+            manifest exist solely for AdMob. NexCompress does not independently use these permissions.</p>
+          <p>For more information, see <a href="https://policies.google.com/privacy" target="_blank"
+              rel="noopener noreferrer">Google's Privacy Policy</a> and <a
+              href="https://policies.google.com/technologies/partner-sites" target="_blank"
+              rel="noopener noreferrer">How Google uses information from partner apps</a>.</p>
+        </div>
+
+        <div class="policy-section">
+          <h2>6. Online Conversions (Optional)</h2>
+          <p>The app includes optional online Office conversion tools (Word ↔ PDF, PowerPoint → PDF, Excel → PDF, etc.).
+            These tools:</p>
+          <ul>
+            <li>Require an internet connection and an optional third-party API key</li>
+            <li>Are <strong>disabled by default</strong> (run in demo/simulation mode without a key)</li>
+            <li>When enabled, upload <strong>only the document you explicitly select</strong> to the configured
+              conversion service for processing</li>
+          </ul>
+          <p>If you use online conversions, refer to the privacy policy of the configured conversion service (e.g.,
+            ConvertAPI at convertapi.com).</p>
+        </div>
+
+        <div class="policy-section">
+          <h2>7. Permissions</h2>
+          <table class="perm-table" aria-label="App permissions and their purposes">
+            <thead>
+              <tr>
+                <th>Permission</th>
+                <th>Reason</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>INTERNET</td>
+                <td>Required by Google AdMob SDK to fetch and display ads</td>
+              </tr>
+              <tr>
+                <td>ACCESS_NETWORK_STATE</td>
+                <td>Required by Google AdMob SDK to check connectivity before requesting ads</td>
+              </tr>
+              <tr>
+                <td>AD_ID</td>
+                <td>Required by AdMob on Android 13+ to use the Advertising ID for ad personalization</td>
+              </tr>
+            </tbody>
+          </table>
+          <p style="margin-top:1rem;">NexCompress does <strong>not</strong> request <code>READ_EXTERNAL_STORAGE</code>
+            or <code>WRITE_EXTERNAL_STORAGE</code>. File access is handled through Android's Scoped Storage / Storage
+            Access Framework, which grants only temporary, user-selected file access.</p>
+        </div>
+
+        <div class="policy-section">
+          <h2>8. Children's Privacy</h2>
+          <p>NexCompress does not knowingly collect any information from children under 13. The app contains
+            advertising; parents should supervise usage in line with applicable laws (COPPA, etc.).</p>
+        </div>
+
+        <div class="policy-section">
+          <h2>9. Changes to This Policy</h2>
+          <p>We may update this Privacy Policy from time to time. When we do, we will update the "Last updated" date at
+            the top of this page. Continued use of the app after any changes constitutes acceptance of the updated
+            policy.</p>
+        </div>
+
+        <div class="policy-section">
+          <h2>10. Contact</h2>
+          <p>If you have any questions about this Privacy Policy, please visit the <button onclick="navigate('support')"
+              style="color:var(--nex-indigo);text-decoration:underline;background:none;border:none;cursor:pointer;font-size:inherit;padding:0;">Support
+              &amp; Contact page</button>.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer for Privacy page -->
+    <footer role="contentinfo">
+      <div class="footer-inner">
+        <div>
+          <div class="footer-brand">
+            <div class="footer-brand-icon" aria-hidden="true">⚡</div>
+            NexCompress
+          </div>
+          <div class="footer-copy">© 2026 Krish Bahukhandi. All rights reserved.</div>
+        </div>
+        <div class="footer-links" role="navigation" aria-label="Footer navigation">
+          <button onclick="navigate('home')" aria-label="Home">Home</button>
+          <button onclick="navigate('support')" aria-label="Support">Support</button>
+          <a href="https://github.com/KrishBahukhandi/NexCompressor" target="_blank" rel="noopener noreferrer"
+            aria-label="NexCompress on GitHub">GitHub</a>
+        </div>
+        <div class="footer-right">Requires Android 8.0 (API 26) or higher</div>
+      </div>
+      <div class="footer-bottom">Made with ❤️ in India</div>
+    </footer>
+  </div>
+
+  <!-- ======================== -->
+  <!-- PAGE 3: SUPPORT PAGE     -->
+  <!-- ======================== -->
+  <div class="page" id="page-support">
+    <div class="support-page page-transition">
+      <div class="support-inner">
+        <div class="support-header">
+          <h1 class="support-title">Support &amp; Contact</h1>
+          <p class="support-subtitle">We're here to help. NexCompress is built by a solo developer — expect a fast,
+            personal reply.</p>
+        </div>
+
+        <!-- FAQ -->
+        <div class="faq-section">
+          <h2 class="faq-section-title">Frequently Asked Questions</h2>
+
+          <div class="faq-item" id="faq1">
+            <div class="faq-question" onclick="toggleFaq('faq1')" role="button" tabindex="0" aria-expanded="false"
+              aria-controls="faq1-answer">
+              <span>Does NexCompress upload my files to the internet?</span>
+              <i data-lucide="chevron-down" class="faq-chevron" aria-hidden="true"></i>
+            </div>
+            <div class="faq-answer" id="faq1-answer" role="region">
+              <p>No. Never. All PDF and image processing runs entirely on your Android device using native APIs and the
+                open-source PDFBox-Android engine. No file content, filename, or metadata is ever transmitted anywhere.
+                The only network the app uses is for Google AdMob ads.</p>
+            </div>
+          </div>
+
+          <div class="faq-item" id="faq2">
+            <div class="faq-question" onclick="toggleFaq('faq2')" role="button" tabindex="0" aria-expanded="false"
+              aria-controls="faq2-answer">
+              <span>Why does the app have INTERNET permission if it's offline?</span>
+              <i data-lucide="chevron-down" class="faq-chevron" aria-hidden="true"></i>
+            </div>
+            <div class="faq-answer" id="faq2-answer" role="region">
+              <p>The <code
+                  style="background:var(--surface-variant);padding:0.1em 0.4em;border-radius:4px;font-size:0.85em;color:var(--nex-cyan);">INTERNET</code>
+                permission exists solely for the Google AdMob advertising SDK. Without it, AdMob cannot fetch and
+                display ads. The app itself does not independently use any network connection for file processing.</p>
+            </div>
+          </div>
+
+          <div class="faq-item" id="faq3">
+            <div class="faq-question" onclick="toggleFaq('faq3')" role="button" tabindex="0" aria-expanded="false"
+              aria-controls="faq3-answer">
+              <span>Where are my output files saved?</span>
+              <i data-lucide="chevron-down" class="faq-chevron" aria-hidden="true"></i>
+            </div>
+            <div class="faq-answer" id="faq3-answer" role="region">
+              <p>All processed files are automatically saved to the <code
+                  style="background:var(--surface-variant);padding:0.1em 0.4em;border-radius:4px;font-size:0.85em;color:var(--nex-cyan);">Downloads/NexCompress</code>
+                folder on your device. You can also rename, re-download to a custom location, share, or preview any
+                output directly from the History Log on the home screen.</p>
+            </div>
+          </div>
+
+          <div class="faq-item" id="faq4">
+            <div class="faq-question" onclick="toggleFaq('faq4')" role="button" tabindex="0" aria-expanded="false"
+              aria-controls="faq4-answer">
+              <span>How do I compress a PDF?</span>
+              <i data-lucide="chevron-down" class="faq-chevron" aria-hidden="true"></i>
+            </div>
+            <div class="faq-answer" id="faq4-answer" role="region">
+              <p>On the home screen, tap the 'Compress PDF' tile (or select it from the side drawer). The system file
+                picker will open — choose your PDF. Then pick your quality profile (Recommended, Balanced, or
+                High-Fidelity) on the next screen and tap Compress. The app guarantees it will never produce a file
+                larger than your original.</p>
+            </div>
+          </div>
+
+          <div class="faq-item" id="faq5">
+            <div class="faq-question" onclick="toggleFaq('faq5')" role="button" tabindex="0" aria-expanded="false"
+              aria-controls="faq5-answer">
+              <span>Can I batch-convert multiple images?</span>
+              <i data-lucide="chevron-down" class="faq-chevron" aria-hidden="true"></i>
+            </div>
+            <div class="faq-answer" id="faq5-answer" role="region">
+              <p>Yes! The image converter supports batch conversion of up to 5 images at once. You can drag to reorder
+                them and rename each output file before converting. Supported formats: JPG, PNG, HEIC, BMP, WebP as
+                input; JPG, PNG, WebP as output.</p>
+            </div>
+          </div>
+
+          <div class="faq-item" id="faq6">
+            <div class="faq-question" onclick="toggleFaq('faq6')" role="button" tabindex="0" aria-expanded="false"
+              aria-controls="faq6-answer">
+              <span>What does 'Demo mode' mean for online conversions?</span>
+              <i data-lucide="chevron-down" class="faq-chevron" aria-hidden="true"></i>
+            </div>
+            <div class="faq-answer" id="faq6-answer" role="region">
+              <p>Online Office conversions (Word↔PDF, PowerPoint→PDF, etc.) require a third-party API key to perform
+                real conversions. Without a key, the app runs a simulated demo that shows how the flow works but
+                produces a placeholder output. These tools are completely optional — all core PDF and image features
+                work 100% offline.</p>
+            </div>
+          </div>
+
+          <div class="faq-item" id="faq7">
+            <div class="faq-question" onclick="toggleFaq('faq7')" role="button" tabindex="0" aria-expanded="false"
+              aria-controls="faq7-answer">
+              <span>How do I sign a PDF?</span>
+              <i data-lucide="chevron-down" class="faq-chevron" aria-hidden="true"></i>
+            </div>
+            <div class="faq-answer" id="faq7-answer" role="region">
+              <p>Select 'Sign PDF' from the home screen or side drawer. Pick your PDF, then draw your signature on the
+                signature pad. Once drawn, you can drag and resize the signature on any page. Tap export when done — the
+                signed page is flattened, and all other pages remain lossless.</p>
+            </div>
+          </div>
+
+          <div class="faq-item" id="faq8">
+            <div class="faq-question" onclick="toggleFaq('faq8')" role="button" tabindex="0" aria-expanded="false"
+              aria-controls="faq8-answer">
+              <span>What Android version does NexCompress require?</span>
+              <i data-lucide="chevron-down" class="faq-chevron" aria-hidden="true"></i>
+            </div>
+            <div class="faq-answer" id="faq8-answer" role="region">
+              <p>Android 8.0 (API level 26, 'Oreo') or higher. The app targets Android 15 (API 35) and is compiled with
+                the latest SDK.</p>
+            </div>
+          </div>
+
+          <div class="faq-item" id="faq9">
+            <div class="faq-question" onclick="toggleFaq('faq9')" role="button" tabindex="0" aria-expanded="false"
+              aria-controls="faq9-answer">
+              <span>How do I protect / password-lock a PDF?</span>
+              <i data-lucide="chevron-down" class="faq-chevron" aria-hidden="true"></i>
+            </div>
+            <div class="faq-answer" id="faq9-answer" role="region">
+              <p>Select 'Protect PDF' from the side drawer, pick your PDF, enter your desired password, and tap Lock. To
+                unlock a protected PDF, select the same option and enter the existing password. Your password is
+                processed entirely on-device and is never transmitted anywhere.</p>
+            </div>
+          </div>
+
+          <div class="faq-item" id="faq10">
+            <div class="faq-question" onclick="toggleFaq('faq10')" role="button" tabindex="0" aria-expanded="false"
+              aria-controls="faq10-answer">
+              <span>I found a bug — how do I report it?</span>
+              <i data-lucide="chevron-down" class="faq-chevron" aria-hidden="true"></i>
+            </div>
+            <div class="faq-answer" id="faq10-answer" role="region">
+              <p>Please open an issue on our GitHub repository: <a
+                  href="https://github.com/KrishBahukhandi/NexCompressor/issues" target="_blank"
+                  rel="noopener noreferrer">github.com/KrishBahukhandi/NexCompressor/issues</a>. Include your Android
+                version, device model, and steps to reproduce the issue.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contact Form -->
+        <div class="contact-form-section">
+          <h2 class="contact-form-title">Send a Message</h2>
+          <div class="contact-form">
+            <form id="contactForm" onsubmit="handleFormSubmit(event)" novalidate>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="contactName">Full Name</label>
+                  <input type="text" id="contactName" name="name" placeholder="Your name" required
+                    aria-required="true" />
+                </div>
+                <div class="form-group">
+                  <label for="contactEmail">Email Address</label>
+                  <input type="email" id="contactEmail" name="email" placeholder="your@email.com" required
+                    aria-required="true" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="contactSubject">Subject</label>
+                <select id="contactSubject" name="subject" required aria-required="true">
+                  <option value="" disabled selected>Select a topic</option>
+                  <option value="bug">Bug Report</option>
+                  <option value="feature">Feature Request</option>
+                  <option value="privacy">Privacy Question</option>
+                  <option value="general">General Inquiry</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="contactMessage">Message</label>
+                <textarea id="contactMessage" name="message" rows="5" placeholder="Describe your issue or question..."
+                  required aria-required="true"></textarea>
+              </div>
+              <button type="submit" class="form-submit-btn" id="submitBtn">Send Message</button>
+            </form>
+            <p class="form-note">This form is for informational purposes. Replace with a real form backend (e.g.,
+              Formspree, EmailJS) before going live.</p>
+          </div>
+        </div>
+
+        <!-- Contact Info -->
+        <div>
+          <h2 class="contact-form-title">Direct Contact</h2>
+          <div class="contact-info" role="list" aria-label="Contact options">
+            <div class="contact-card" role="listitem">
+              <div class="contact-card-icon"><i data-lucide="code-2" aria-hidden="true"></i></div>
+              <h4>GitHub Issues</h4>
+              <p><a href="https://github.com/KrishBahukhandi/NexCompressor/issues" target="_blank"
+                  rel="noopener noreferrer" aria-label="Open a GitHub issue for NexCompress">Open an issue →</a></p>
+            </div>
+            <div class="contact-card" role="listitem">
+              <div class="contact-card-icon"><i data-lucide="mail" aria-hidden="true"></i></div>
+              <h4>Email</h4>
+              <p>Add your email address here</p>
+            </div>
+            <div class="contact-card" role="listitem">
+              <div class="contact-card-icon"><i data-lucide="clock" aria-hidden="true"></i></div>
+              <h4>Response Time</h4>
+              <p>Typically within 48 hours</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer for Support page -->
+    <footer role="contentinfo" style="margin-top:4rem;">
+      <div class="footer-inner">
+        <div>
+          <div class="footer-brand">
+            <div class="footer-brand-icon" aria-hidden="true">⚡</div>
+            NexCompress
+          </div>
+          <div class="footer-copy">© 2026 Krish Bahukhandi. All rights reserved.</div>
+        </div>
+        <div class="footer-links" role="navigation" aria-label="Footer navigation">
+          <button onclick="navigate('home')" aria-label="Home">Home</button>
+          <button onclick="navigate('privacy')" aria-label="Privacy Policy">Privacy Policy</button>
+          <a href="https://github.com/KrishBahukhandi/NexCompressor" target="_blank" rel="noopener noreferrer"
+            aria-label="NexCompress on GitHub">GitHub</a>
+        </div>
+        <div class="footer-right">Requires Android 8.0 (API 26) or higher</div>
+      </div>
+      <div class="footer-bottom">Made with ❤️ in India</div>
+    </footer>
+  </div>
+
+  <!-- ============================= -->
+  <!-- JAVASCRIPT                    -->
+  <!-- ============================= -->
+  <script>
+    // ===== THEME =====
+    const THEME_KEY = 'nex-theme';
+    let isDark = localStorage.getItem(THEME_KEY) !== 'light';
+
+    function applyTheme() {
+      document.body.classList.toggle('light-mode', !isDark);
+      const icon = isDark ? 'moon' : 'sun';
+      document.querySelectorAll('#themeToggleDesktop i').forEach(el => {
+        el.setAttribute('data-lucide', icon);
+      });
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function toggleTheme() {
+      isDark = !isDark;
+      localStorage.setItem(THEME_KEY, isDark ? 'dark' : 'light');
+      applyTheme();
+    }
+
+    // ===== NAVIGATION =====
+    function navigate(page) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      const target = document.getElementById('page-' + page);
+      if (target) target.classList.add('active');
+      window.location.hash = page === 'home' ? '' : page;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      closeMobileMenu();
+    }
+
+    function scrollToSection(id) {
+      navigate('home');
+      setTimeout(() => {
+        const el = document.getElementById(id);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
+
+    function handleHash() {
+      const hash = window.location.hash.replace('#', '');
+      if (hash === 'privacy') navigate('privacy');
+      else if (hash === 'support') navigate('support');
+      else navigate('home');
+    }
+
+    window.addEventListener('hashchange', handleHash);
+
+    // ===== MOBILE MENU =====
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobileMenu');
+      const btn = document.getElementById('hamburgerBtn');
+      const isOpen = menu.classList.toggle('open');
+      btn.setAttribute('aria-expanded', isOpen.toString());
+    }
+
+    function closeMobileMenu() {
+      const menu = document.getElementById('mobileMenu');
+      const btn = document.getElementById('hamburgerBtn');
+      menu.classList.remove('open');
+      btn.setAttribute('aria-expanded', 'false');
+    }
+
+    // ===== FEATURE TABS =====
+    function showTab(tab) {
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => {
+        b.classList.remove('active', 'active-violet', 'active-amber');
+        b.setAttribute('aria-selected', 'false');
+      });
+
+      document.getElementById('tab-' + tab).classList.add('active');
+
+      const btnMap = { pdf: 'tab-btn-pdf', image: 'tab-btn-image', online: 'tab-btn-online' };
+      const btn = document.getElementById(btnMap[tab]);
+      if (btn) {
+        btn.classList.add('active');
+        btn.setAttribute('aria-selected', 'true');
+        if (tab === 'image') btn.classList.add('active-violet');
+        if (tab === 'online') btn.classList.add('active-amber');
+      }
+    }
+
+    // ===== FAQ ACCORDION =====
+    function toggleFaq(id) {
+      const item = document.getElementById(id);
+      const isOpen = item.classList.toggle('open');
+      const question = item.querySelector('.faq-question');
+      question.setAttribute('aria-expanded', isOpen.toString());
+    }
+
+    // Keyboard support for FAQ
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        const target = e.target;
+        if (target.classList.contains('faq-question')) {
+          e.preventDefault();
+          target.click();
+        }
+      }
+    });
+
+    // ===== ANIMATED COUNTERS =====
+    let countersAnimated = false;
+
+    function animateCounters() {
+      if (countersAnimated) return;
+      const stats = [
+        { id: 'stat-tools', target: 14, suffix: '+', duration: 1200 },
+        { id: 'stat-uploads', target: 0, suffix: '', duration: 800 },
+        { id: 'stat-perms', target: 0, suffix: '', duration: 800 },
+        { id: 'stat-ondevice', target: 100, suffix: '%', duration: 1500 },
+      ];
+
+      stats.forEach(({ id, target, suffix, duration }) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const start = performance.now();
+        function step(now) {
+          const progress = Math.min((now - start) / duration, 1);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          el.textContent = Math.round(eased * target) + suffix;
+          if (progress < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+      });
+
+      countersAnimated = true;
+    }
+
+    const statsSection = document.querySelector('.stats-section');
+    if (statsSection) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) animateCounters();
+        });
+      }, { threshold: 0.3 });
+      observer.observe(statsSection);
+    }
+
+    // ===== CONTACT FORM =====
+    function handleFormSubmit(e) {
+      e.preventDefault();
+      const btn = document.getElementById('submitBtn');
+      btn.textContent = 'Message Sent! ✓';
+      btn.style.background = 'linear-gradient(135deg, var(--nex-green), #28e06b)';
+      btn.disabled = true;
+      setTimeout(() => {
+        btn.textContent = 'Send Message';
+        btn.style.background = '';
+        btn.disabled = false;
+        document.getElementById('contactForm').reset();
+      }, 3000);
+    }
+
+    // ===== INIT =====
+    document.addEventListener('DOMContentLoaded', () => {
+      applyTheme();
+      handleHash();
+      if (window.lucide) {
+        lucide.createIcons();
+      }
+    });
+
+    // Wait for lucide to load then create icons
+    window.addEventListener('load', () => {
+      if (window.lucide) {
+        lucide.createIcons();
+      }
+    });
+  </script>
+</body>
+
+</html>
